@@ -1,0 +1,12 @@
+@media only screen and (max-width:670px) {
+    .mobile_topbar_content {
+        display: block !important
+    }
+    .mobile_topbar .mobile_topbar_button {
+        color: #fff;
+        display: none !important
+    }
+    .mobile_topbar .share_price_topbar {
+        margin-bottom: 0 !important
+    }
+}

